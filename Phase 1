@@ -1,1 +1,139 @@
+1. Use GDB (GNU Debugger) and set a breakpoint on phase_1:
+    lab2@lab2-OptiPlex-3040:~/Desktop/12190083/Assignment/bomb001$ gdb bomb
+    GNU gdb (Ubuntu 8.1.1-0ubuntu1) 8.1.1
+    Copyright (C) 2018 Free Software Foundation, Inc.
+    License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+    This is free software: you are free to change and redistribute it.
+    There is NO WARRANTY, to the extent permitted by law.  Type "show copying"
+    and "show warranty" for details.
+    This GDB was configured as "x86_64-linux-gnu".
+    Type "show configuration" for configuration details.
+    For bug reporting instructions, please see:
+    <http://www.gnu.org/software/gdb/bugs/>.
+    Find the GDB manual and other documentation resources online at:
+    <http://www.gnu.org/software/gdb/documentation/>.
+    For help, type "help".
+    Type "apropos word" to search for commands related to "word"...
+    Reading symbols from bomb...done.
+    (gdb) b phase_1
+    Breakpoint 1 at 0x400e8d
 
+    (gdb) run
+      Starting program: /home/lab2/Desktop/12190083/Assignment/bomb001/bomb 
+      Welcome to my fiendish little bomb. You have 6 phases with
+      which to blow yourself up. Have a nice day!
+      Test String
+
+      Breakpoint 1, 0x0000000000400e8d in phase_1 ()
+      (gdb) disas
+      Dump of assembler code for function phase_1:
+      => 0x0000000000400e8d <+0>:	sub    $0x8,%rsp
+         0x0000000000400e91 <+4>:	mov    $0x4023d0,%esi
+         0x0000000000400e96 <+9>:	callq  0x40133e <strings_not_equal>  //compares input string with answer
+         0x0000000000400e9b <+14>:	test   %eax,%eax
+         0x0000000000400e9d <+16>:	je     0x400ea4 <phase_1+23>
+         0x0000000000400e9f <+18>:	callq  0x40143d <explode_bomb>
+         0x0000000000400ea4 <+23>:	add    $0x8,%rsp
+         0x0000000000400ea8 <+27>:	retq   
+      End of assembler dump.
+
+     Lets examine what is being moved from address 0x4023d0. Use '/s' because the answer will be some sort of string.
+     (gdb) x /s0x4023d0
+     0x4023d0:	"The moon unit will be divided into two divisions."
+
+     So this string is being moved into %esi, and will be passed into <strings_not_equal>.
+     <strings_not_equal> doesn't have excess to bomb call so we can go to next instruction.
+
+     (gdb) ni
+      0x0000000000400e9b in phase_1 ()
+      (gdb) disas
+      Dump of assembler code for function phase_1:
+         0x0000000000400e8d <+0>:	sub    $0x8,%rsp
+         0x0000000000400e91 <+4>:	mov    $0x4023d0,%esi
+         0x0000000000400e96 <+9>:	callq  0x40133e <strings_not_equal>
+      => 0x0000000000400e9b <+14>:	test   %eax,%eax
+         0x0000000000400e9d <+16>:	je     0x400ea4 <phase_1+23>
+         0x0000000000400e9f <+18>:	callq  0x40143d <explode_bomb>
+         0x0000000000400ea4 <+23>:	add    $0x8,%rsp
+         0x0000000000400ea8 <+27>:	retq   
+      End of assembler dump.
+      (gdb) i r
+        rax            0x1	1     //1&1 will not give zero so the bomb will explode.
+        rbx            0x0	0
+        rcx            0xb	11
+        rdx            0x1	1
+        rsi            0x4023d0	4203472
+        rdi            0x402401	4203521
+        rbp            0x4021f0	0x4021f0 <__libc_csu_init>
+
+       Since, rax is 1, it will call the bomb.
+
+       (gdb) ni
+        0x0000000000400e9f in phase_1 ()
+        (gdb) disas
+        Dump of assembler code for function phase_1:
+           0x0000000000400e8d <+0>:	sub    $0x8,%rsp
+           0x0000000000400e91 <+4>:	mov    $0x4023d0,%esi
+           0x0000000000400e96 <+9>:	callq  0x40133e <strings_not_equal>
+           0x0000000000400e9b <+14>:	test   %eax,%eax
+           0x0000000000400e9d <+16>:	je     0x400ea4 <phase_1+23>
+        => 0x0000000000400e9f <+18>:	callq  0x40143d <explode_bomb>
+           0x0000000000400ea4 <+23>:	add    $0x8,%rsp
+           0x0000000000400ea8 <+27>:	retq   
+        End of assembler dump.
+        (gdb) ni
+
+        BOOM!!!
+        The bomb has blown up.
+        [Inferior 1 (process 2970) exited with code 010]
+
+       Now, lets try with the string that we got from diassembler code and see the value of %eax.
+
+       (gdb) b phase_1
+        Note: breakpoint 1 also set at pc 0x400e8d.
+        Breakpoint 2 at 0x400e8d
+        (gdb) run
+        Starting program: /home/lab2/Desktop/12190083/Assignment/bomb001/bomb 
+        Welcome to my fiendish little bomb. You have 6 phases with
+        which to blow yourself up. Have a nice day!
+        The moon unit will be divided into two divisions.
+
+        Breakpoint 1, 0x0000000000400e8d in phase_1 ()
+        (gdb) disas
+        Dump of assembler code for function phase_1:
+        => 0x0000000000400e8d <+0>:	sub    $0x8,%rsp
+           0x0000000000400e91 <+4>:	mov    $0x4023d0,%esi
+           0x0000000000400e96 <+9>:	callq  0x40133e <strings_not_equal>
+           0x0000000000400e9b <+14>:	test   %eax,%eax
+           0x0000000000400e9d <+16>:	je     0x400ea4 <phase_1+23>
+           0x0000000000400e9f <+18>:	callq  0x40143d <explode_bomb>
+           0x0000000000400ea4 <+23>:	add    $0x8,%rsp
+           0x0000000000400ea8 <+27>:	retq   
+        End of assembler dump.
+
+        (gdb) u *0x0000000000400e9b
+          0x0000000000400e9b in phase_1 ()
+          (gdb) disas
+          Dump of assembler code for function phase_1:
+             0x0000000000400e8d <+0>:	sub    $0x8,%rsp
+             0x0000000000400e91 <+4>:	mov    $0x4023d0,%esi
+             0x0000000000400e96 <+9>:	callq  0x40133e <strings_not_equal>
+          => 0x0000000000400e9b <+14>:	test   %eax,%eax
+             0x0000000000400e9d <+16>:	je     0x400ea4 <phase_1+23>
+             0x0000000000400e9f <+18>:	callq  0x40143d <explode_bomb>
+             0x0000000000400ea4 <+23>:	add    $0x8,%rsp
+             0x0000000000400ea8 <+27>:	retq   
+          End of assembler dump.
+          (gdb) i r
+          rax            0x0	0    //%rax = 0 so it will jump and pass the bomb
+          rbx            0x0	0
+          rcx            0x31	49
+          rdx            0x0	0
+
+   ****Solution: The moon unit will be divided into two divisions.
+
+      lab2@lab2-OptiPlex-3040:~/Desktop/12190083/Assignment/bomb001$ ./bomb
+      Welcome to my fiendish little bomb. You have 6 phases with
+      which to blow yourself up. Have a nice day!
+      The moon unit will be divided into two divisions.
+      Phase 1 defused. How about the next one?
