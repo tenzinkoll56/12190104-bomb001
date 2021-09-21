@@ -1,5 +1,5 @@
 1. Use GDB (GNU Debugger) and set a breakpoint on phase_1:
-    lab2@lab2-OptiPlex-3040:~/Desktop/12190083/Assignment/bomb001$ gdb bomb
+    lab2@lab2-OptiPlex-3040:~/Desktop/Assignment/bomb001$ gdb bomb
     GNU gdb (Ubuntu 8.1.1-0ubuntu1) 8.1.1
     Copyright (C) 2018 Free Software Foundation, Inc.
     License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
@@ -93,7 +93,7 @@
         Note: breakpoint 1 also set at pc 0x400e8d.
         Breakpoint 2 at 0x400e8d
         (gdb) run
-        Starting program: /home/lab2/Desktop/12190083/Assignment/bomb001/bomb 
+        Starting program: /home/lab2/Desktop/Assignment/bomb001/bomb 
         Welcome to my fiendish little bomb. You have 6 phases with
         which to blow yourself up. Have a nice day!
         The moon unit will be divided into two divisions.
@@ -132,7 +132,7 @@
 
    ****Solution: The moon unit will be divided into two divisions.
 
-      lab2@lab2-OptiPlex-3040:~/Desktop/12190083/Assignment/bomb001$ ./bomb
+      lab2@lab2-OptiPlex-3040:~/Desktop/Assignment/bomb001$ ./bomb
       Welcome to my fiendish little bomb. You have 6 phases with
       which to blow yourself up. Have a nice day!
       The moon unit will be divided into two divisions.
