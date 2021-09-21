@@ -19,7 +19,7 @@
     Breakpoint 1 at 0x400e8d
 
     (gdb) run
-      Starting program: /home/lab2/Desktop/12190083/Assignment/bomb001/bomb 
+      Starting program: /home/lab2/Desktop/Assignment/bomb001/bomb 
       Welcome to my fiendish little bomb. You have 6 phases with
       which to blow yourself up. Have a nice day!
       Test String
